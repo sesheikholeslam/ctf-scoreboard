@@ -38,11 +38,11 @@
     .control-group
       = invisible_recaptcha_tags text: 'Submit', :class => "btn btn-primary"
 
-- if @solved_challenge
+- if @survey
   %hr/
   = render partial: "surveys/form"
   %hr/
-  
+
 - if @solved_by.length > 0
   %table.table.table-bordered.table-striped
     %thead

@@ -15,7 +15,17 @@ class ChallengesController < ApplicationController
     @solved_video_url = @solved_challenge.flag.video_url if @solved_challenge
     flash.now[:notice] = I18n.t('flag.accepted') if @solved_challenge
     if @solved_challenge
-      @survey = Survey.find_by(team: current_user.team.id)
+      # My recommendaiton:
+      # Associate surveys with a single team and a single challenge.
+      # From what I'm understanding, surveys are only for teams that have solved
+      # a challenge. It's much easier to do a find_by for the team and challenge
+      # since we have access to both within show and update. It's much more difficult
+      # to try to find the correct flag that a single user from a team submitted.
+      # Making this change would require altering the survey model,
+      # survey controller params, survey form view.
+      @survey = Survey.find_by(team: current_user.team, challenge: @challenge)
+      # If for some reason the survey was not created yet, then make a new one for the team.
+      @survey ||= Survey.new(team: current_user.team, challenge: @challenge)
     end
   end
 
@@ -25,7 +35,7 @@ class ChallengesController < ApplicationController
       @solved_challenge = @flag_found.save_solved_challenge(current_user)
       @solved_video_url = @flag_found.video_url
       flash.now[:notice] = I18n.t('flag.accepted')
-      @survey = Survey.create(submitted_flag_id: @submitted_flag.id, team_id: current_user.team.id)
+      @survey = Survey.new(team: current_user.team, challenge: @challenge)
     else
       flash.now[:alert] = wrong_flag_messages.sample
     end

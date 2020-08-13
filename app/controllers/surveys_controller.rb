@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 class SurveysController < ApplicationController
+  def update
+    return redirect_to '/game', notice: 'implement me please'
+  end
+
   def create
     @survey = Survey.new(survey_params)
-    if(@survey.save)
+    if (@survey.save)
       return redirect_to '/game', notice: I18n.t('surveys.submitted')
     else
       return redirect_to '/game', notice: @survey.errors.full_messages
